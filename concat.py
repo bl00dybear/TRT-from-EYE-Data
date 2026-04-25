@@ -1,22 +1,24 @@
 import pandas as pd
-import numpy as np
+import os
 
-# 1. Load the files
-df_lexical = pd.read_csv('./contextual-feature-pipeline/output/train_features.csv')
-df_context = pd.read_csv('./lexical-feature-pipeline/output/train_features.csv')
+def load_and_merge(lex_path, ctx_path):
+    df_lex = pd.read_csv(lex_path)
+    df_ctx = pd.read_csv(ctx_path)
+    merged = pd.merge(df_lex, df_ctx, on='word_id', how='left')
+    if 'text_id' in merged.columns:
+        merged = merged.drop(columns=['text_id'])
+    return merged
 
-# 2. Merge on word_id
-# We use 'inner' to ensure we only keep rows present in both pipelines
-train_final = pd.merge(df_lexical, df_context, on='word_id', how='inner')
+train_df = load_and_merge(
+    './lexical-feature-pipeline/output/train_features.csv',
+    './contextual-feature-pipeline/output/train_features.csv'
+)
 
-# 3. Handle the 'answer' column (Target)
-# If answer is TRT, log transform often improves Pearson correlation
-train_final['target'] = np.log1p(train_final['answer'])
+test_df = load_and_merge(
+    './lexical-feature-pipeline/output/test_features.csv',
+    './contextual-feature-pipeline/output/test_features.csv'
+)
 
-# 4. Final Feature Selection
-# Drop columns that are strings or identifiers
-X = train_final.drop(columns=['word_id', 'answer', 'target'])
-y = train_final['target']
-
-# 5. Define Categorical Indices for LightGBM
-cat_features = ['text_id', 'POS_tag', 'NE_type', 'case_encoded', 'verb_form']
+os.makedirs('./merged_output', exist_ok=True)
+train_df.to_csv('./merged_output/train_final.csv', index=False)
+test_df.to_csv('./merged_output/test_final.csv', index=False)

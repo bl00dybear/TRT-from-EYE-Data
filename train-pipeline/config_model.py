@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 @dataclass
 class ModelConfig:
-    train_path: str = ""
-    test_path: str = ""
+    train_path: str = "merged_output/train_final.csv"
+    test_path: str = "merged_output/test_final.csv"
     output_dir: str = "output"
     model_filename: str = "model.txt"
     submission_filename: str = "submission.csv"
@@ -14,14 +14,44 @@ class ModelConfig:
     id_col: str = "word_id"
     submission_id_col: str = "datapointID"
 
-    categorical_features: tuple = ("NE_type", "POS_tag", "text_id")
+    categorical_features: tuple = ()
 
-    drop_cols: tuple = (
-        "word_id", "word", "answer", "participant_id",
-        "text", "text_id_raw"
+    numeric_features: tuple = (
+        "word_len",
+        "word_len_sq",
+        "n_diacritics",
+        "is_capitalized",
+        "starts_sentence",
+        "ends_punct",
+        "has_non_alpha",
+        "zipf_frequency",
+        "n_syllables",
+        "vowel_consonant_ratio",
+        "is_stopword",
+        "participant_id",
+        "page_num",
+        "word_idx",
+        "is_NE",
+        "NE_type",
+        "POS_tag",
+        "is_content_word",
+        "contextual_surprisal",
+        "morph_count",
+        "case_encoded",
+        "verb_form",
+        "is_inflected",
     )
 
-    num_leaves: int = 127
+    drop_cols: tuple = (
+        "word_id",
+        "word",
+        "answer",
+        "text",
+        "text_id",
+        "datapointID",
+    )
+
+    num_leaves: int = 255
     learning_rate: float = 0.05
     n_estimators: int = 1000
     min_child_samples: int = 20

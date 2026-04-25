@@ -14,16 +14,6 @@ assert cfg.test_path != "", "test_path is not set in config_model.py"
 train_df = pd.read_csv(cfg.train_path)
 test_df = pd.read_csv(cfg.test_path)
 
-for df in [train_df, test_df]:
-    if "text_id" not in df.columns and cfg.id_col in df.columns:
-        df["text_id"] = df[cfg.id_col].str.extract(r'^(.*)_page_\d+_\d+$')
-
-for col in cfg.categorical_features:
-    if col in train_df.columns:
-        train_df[col] = train_df[col].astype("category")
-        if col in test_df.columns:
-            test_df[col] = pd.Categorical(test_df[col], categories=train_df[col].cat.categories)
-
 cols_to_drop = [c for c in cfg.drop_cols if c in train_df.columns]
 if cfg.target_col in train_df.columns:
     cols_to_drop.append(cfg.target_col)
@@ -31,7 +21,7 @@ if cfg.target_col in train_df.columns:
 X_train_full = train_df.drop(columns=cols_to_drop)
 y_train_full = train_df[cfg.target_col]
 
-common_cols = list(set(X_train_full.columns).intersection(test_df.columns))
+common_cols = [c for c in cfg.numeric_features if c in X_train_full.columns and c in test_df.columns]
 X_train = X_train_full[common_cols]
 X_test = test_df[common_cols]
 
@@ -53,8 +43,8 @@ X_val, y_val = X_train[val_mask], y_train_full[val_mask]
 print(f"Train: {len(train_participants)} participants, {len(X_tr)} rows")
 print(f"Validation: {len(val_participants)} participants, {len(X_val)} rows")
 
-train_data = lgb.Dataset(X_tr, label=y_tr, categorical_feature=[c for c in cfg.categorical_features if c in X_tr.columns])
-val_data = lgb.Dataset(X_val, label=y_val, categorical_feature=[c for c in cfg.categorical_features if c in X_val.columns], reference=train_data)
+train_data = lgb.Dataset(X_tr, label=y_tr)
+val_data = lgb.Dataset(X_val, label=y_val, reference=train_data)
 
 params = {
     "objective": "regression",
@@ -124,10 +114,16 @@ test_preds = model.predict(X_test)
 test_preds = np.clip(test_preds, 0, None)
 
 sub_id_col = cfg.submission_id_col if cfg.submission_id_col in test_df.columns else cfg.id_col
+datapoint_ids = test_df[sub_id_col].values
+
 submission_df = pd.DataFrame({
-    sub_id_col: test_df[sub_id_col],
+    "subtaskID": np.ones(len(test_df), dtype=int),
+    "datapointID": datapoint_ids,
     "answer": test_preds
 })
+
+submission_df["datapointID"] = pd.to_numeric(submission_df["datapointID"], errors="coerce")
+submission_df = submission_df.sort_values("datapointID").reset_index(drop=True)
 
 sub_path = os.path.join(cfg.output_dir, cfg.submission_filename)
 submission_df.to_csv(sub_path, index=False)
