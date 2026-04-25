@@ -52,6 +52,8 @@ for i in iterator:
     for t_idx in range(1, input_ids.shape[1]):
         token_log_probs[t_idx] = log_probs_all[0, t_idx-1, input_ids[0, t_idx]].item()
         
+    del outputs, logits, log_probs_all
+        
     page_surprisals = []
     char_cursor = 0
     
@@ -82,11 +84,15 @@ for i in iterator:
     for w_id, s_val in zip(word_ids, page_surprisals):
         results.append({'word_id': w_id, 'contextual_surprisal': s_val})
         
-    if not tqdm and (i + 1) % 50 == 0:
-        print(f"Processed {i + 1}/{total_pages} pages — page mean surprisal: {np.mean(page_surprisals):.3f} — truncated words: {n_truncated}")
+    if (i + 1) % 50 == 0:
+        page_mean = np.mean(page_surprisals)
+        msg = f"Page {i+1}/{total_pages} — mean surprisal: {page_mean:.3f} — truncated words: {n_truncated}"
+        if tqdm:
+            tqdm.write(msg)
+        else:
+            print(msg)
         
     if (i + 1) % cfg.cache_clear_every_n_pages == 0:
-        del outputs, logits, log_probs_all
         torch.cuda.empty_cache()
 
 output_df = pd.DataFrame(results)

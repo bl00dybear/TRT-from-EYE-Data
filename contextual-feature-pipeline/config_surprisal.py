@@ -5,7 +5,7 @@ class SurprisalConfig:
     output_dir: str = "output"
     reconstructed_pages_filename: str = "reconstructed_pages.csv"
     surprisal_output_filename: str = "surprisal_features.csv"
-    model_name: str = "readerbench/ro-gpt2"
+    model_name: str = "readerbench/RoGPT2-medium"
     gpu_id: int = 1
     max_tokens: int = 900
     cache_clear_every_n_pages: int = 100

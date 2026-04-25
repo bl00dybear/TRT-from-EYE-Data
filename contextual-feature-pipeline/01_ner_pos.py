@@ -1,7 +1,10 @@
 import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
 from config_ner_pos import NerPosConfig
 cfg = NerPosConfig()
-os.environ["CUDA_VISIBLE_DEVICES"] = str(cfg.gpu_id)
+assert str(cfg.gpu_id) == os.environ["CUDA_VISIBLE_DEVICES"], \
+    f"Config gpu_id {cfg.gpu_id} does not match CUDA_VISIBLE_DEVICES {os.environ['CUDA_VISIBLE_DEVICES']}"
 
 import pandas as pd
 import spacy
