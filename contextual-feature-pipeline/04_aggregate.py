@@ -23,9 +23,9 @@ context_features['NE_type'] = context_features['NE_type'].astype(str).map(ne_map
 train_features = train_df.merge(context_features, on='word_id', how='left')
 test_features = test_df.merge(context_features, on='word_id', how='left')
 
-drop_cols = ['word', 'participant_id', 'text']
-train_features = train_features.drop(columns=drop_cols)
-test_features = test_features.drop(columns=drop_cols)
+# drop_cols = ['word', 'participant_id', 'text']
+# train_features = train_features.drop(columns=drop_cols)
+# test_features = test_features.drop(columns=drop_cols)
 
 train_features.to_csv(os.path.join(cfg.output_dir, cfg.train_output_filename), index=False)
 test_features.to_csv(os.path.join(cfg.output_dir, cfg.test_output_filename), index=False)
