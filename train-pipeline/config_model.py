@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 @dataclass
 class ModelConfig:
-    train_path: str = "merged_output/train_final.csv"
-    test_path: str = "merged_output/test_final.csv"
+    train_path: str = "/media/sebi/nvme-1tb/NitroNLP-2026/feature-pipeline/output/train_features.csv"
+    test_path: str = "/media/sebi/nvme-1tb/NitroNLP-2026/feature-pipeline/output/test_features.csv"
     output_dir: str = "output"
     model_filename: str = "model.txt"
     submission_filename: str = "submission.csv"
@@ -29,8 +29,6 @@ class ModelConfig:
         "vowel_consonant_ratio",
         "is_stopword",
         "participant_id",
-        "page_num",
-        "word_idx",
         "is_NE",
         "NE_type",
         "POS_tag",
@@ -45,11 +43,15 @@ class ModelConfig:
     drop_cols: tuple = (
         "word_id",
         "word",
+        "word_idx",
         "answer",
         "text",
         "text_id",
         "datapointID",
     )
+    
+    categorical_cols = ['NE_type', 'POS_tag', 'verb_form', 'case_encoded']
+    cols_to_shift = ['word_len', 'contextual_surprisal', 'zipf_frequency']
 
     num_leaves: int = 255
     learning_rate: float = 0.05

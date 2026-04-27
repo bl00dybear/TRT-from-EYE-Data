@@ -54,7 +54,7 @@ class ModelConfig:
 
     hidden_dims: tuple = (512, 256, 128)
     dropout: float = 0.25
-    batch_size: int = 2048
+    batch_size: int = 1024
     learning_rate: float = 0.001
     weight_decay: float = 0.0001
     epochs: int = 120

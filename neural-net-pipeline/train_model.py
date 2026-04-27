@@ -33,22 +33,128 @@ class TabularRegressor(nn.Module):
     def __init__(self, num_numeric, dropout):
         super().__init__()
 
-        self.fc1 = nn.Linear(num_numeric, 512)
-        self.bn1 = nn.BatchNorm1d(512)
-        self.fc2 = nn.Linear(512, 256)
-        self.bn2 = nn.BatchNorm1d(256)
-        self.fc3 = nn.Linear(256, 128)
-        self.bn3 = nn.BatchNorm1d(128)
-        self.out = nn.Linear(128, 1)
+        self.input_layer = nn.Sequential(
+            nn.Linear(num_numeric, 1024),
+            nn.BatchNorm1d(1024),
+            nn.ReLU(inplace=True),
+            nn.Dropout(dropout)
+        )
 
-        self.relu = nn.ReLU()
-        self.drop = nn.Dropout(dropout)
+        self.block1 = nn.Sequential(
+            nn.Linear(1024, 1024),
+            nn.BatchNorm1d(1024),
+            nn.ReLU(inplace=True),
+            nn.Dropout(dropout),
+            nn.Linear(1024, 1024),
+            nn.BatchNorm1d(1024)
+        )
 
-    def forward(self, num_x):
-        x = self.drop(self.relu(self.bn1(self.fc1(num_x))))
-        x = self.drop(self.relu(self.bn2(self.fc2(x))))
-        x = self.drop(self.relu(self.bn3(self.fc3(x))))
-        return self.out(x).squeeze(1)
+        self.block2 = nn.Sequential(
+            nn.Linear(1024, 1024),
+            nn.BatchNorm1d(1024),
+            nn.ReLU(inplace=True),
+            nn.Dropout(dropout),
+            nn.Linear(1024, 1024),
+            nn.BatchNorm1d(1024)
+        )
+
+        self.transition1 = nn.Sequential(
+            nn.Linear(1024, 768),
+            nn.BatchNorm1d(768),
+            nn.ReLU(inplace=True),
+            nn.Dropout(dropout)
+        )
+
+        self.block3 = nn.Sequential(
+            nn.Linear(768, 768),
+            nn.BatchNorm1d(768),
+            nn.ReLU(inplace=True),
+            nn.Dropout(dropout),
+            nn.Linear(768, 768),
+            nn.BatchNorm1d(768)
+        )
+
+        self.block4 = nn.Sequential(
+            nn.Linear(768, 768),
+            nn.BatchNorm1d(768),
+            nn.ReLU(inplace=True),
+            nn.Dropout(dropout),
+            nn.Linear(768, 768),
+            nn.BatchNorm1d(768)
+        )
+
+        self.transition2 = nn.Sequential(
+            nn.Linear(768, 512),
+            nn.BatchNorm1d(512),
+            nn.ReLU(inplace=True),
+            nn.Dropout(dropout)
+        )
+
+        self.block5 = nn.Sequential(
+            nn.Linear(512, 512),
+            nn.BatchNorm1d(512),
+            nn.ReLU(inplace=True),
+            nn.Dropout(dropout),
+            nn.Linear(512, 512),
+            nn.BatchNorm1d(512)
+        )
+
+        self.block6 = nn.Sequential(
+            nn.Linear(512, 512),
+            nn.BatchNorm1d(512),
+            nn.ReLU(inplace=True),
+            nn.Dropout(dropout),
+            nn.Linear(512, 512),
+            nn.BatchNorm1d(512)
+        )
+
+        self.head = nn.Sequential(
+            nn.Linear(512, 256),
+            nn.BatchNorm1d(256),
+            nn.ReLU(inplace=True),
+            nn.Dropout(dropout),
+            nn.Linear(256, 128),
+            nn.BatchNorm1d(128),
+            nn.ReLU(inplace=True),
+            nn.Dropout(dropout),
+            nn.Linear(128, 1)
+        )
+
+        self.relu = nn.ReLU(inplace=True)
+
+    def forward(self, tensor_in):
+        tensor = self.input_layer(tensor_in)
+
+        skip = tensor
+        tensor = self.block1(tensor)
+        tensor = self.relu(tensor + skip)
+
+        skip = tensor
+        tensor = self.block2(tensor)
+        tensor = self.relu(tensor + skip)
+
+        tensor = self.transition1(tensor)
+
+        skip = tensor
+        tensor = self.block3(tensor)
+        tensor = self.relu(tensor + skip)
+
+        skip = tensor
+        tensor = self.block4(tensor)
+        tensor = self.relu(tensor + skip)
+
+        tensor = self.transition2(tensor)
+
+        skip = tensor
+        tensor = self.block5(tensor)
+        tensor = self.relu(tensor + skip)
+
+        skip = tensor
+        tensor = self.block6(tensor)
+        tensor = self.relu(tensor + skip)
+
+        tensor = self.head(tensor)
+        return tensor.squeeze(1)
 
 
 def set_seed(seed):
@@ -211,6 +317,9 @@ def main():
         for col in cfg.numeric_features
         if col in train_part.columns and col in valid_part.columns and col in test_df.columns
     ]
+
+    # print(len(col))
+    # print(len(numeric_cols))
 
     for col in numeric_cols:
         train_part[col] = pd.to_numeric(train_part[col], errors="coerce")

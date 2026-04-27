@@ -8,26 +8,74 @@ from config_model import ModelConfig
 
 cfg = ModelConfig()
 
-assert cfg.train_path != "", "train_path is not set in config_model.py"
-assert cfg.test_path != "", "test_path is not set in config_model.py"
 
 train_df = pd.read_csv(cfg.train_path)
 test_df = pd.read_csv(cfg.test_path)
 
+
+def existing_cols(df, cols):
+    return [col for col in cols if col in df.columns]
+
+categorical_cols = ['NE_type', 'POS_tag', 'verb_form', 'case_encoded']
+for c in categorical_cols:
+    if c in train_df.columns:
+        train_df[c] = train_df[c].astype('category')
+    if c in test_df.columns:
+        test_df[c] = test_df[c].astype('category')
+
+cols_to_shift = ['word_len', 'contextual_surprisal', 'zipf_frequency']
+new_lag_lead_cols = []
+
+sort_cols = existing_cols(train_df, ['participant_id', 'text', 'page_num', 'word_idx'])
+group_cols = existing_cols(train_df, ['participant_id', 'text'])
+
+if len(sort_cols) > 0:
+    train_df = train_df.sort_values(by=sort_cols)
+    test_df = test_df.sort_values(by=sort_cols)
+
+if len(group_cols) == 0:
+    group_cols = existing_cols(train_df, ['participant_id'])
+
+for col in cols_to_shift:
+    if col in train_df.columns:
+        lag1, lead1 = f'{col}_lag1', f'{col}_lead1'
+        lag2, lead2 = f'{col}_lag2', f'{col}_lead2'
+        
+        train_df[lag1] = train_df.groupby(group_cols)[col].shift(1).fillna(0)
+        train_df[lead1] = train_df.groupby(group_cols)[col].shift(-1).fillna(0)
+        train_df[lag2] = train_df.groupby(group_cols)[col].shift(2).fillna(0)
+        train_df[lead2] = train_df.groupby(group_cols)[col].shift(-2).fillna(0)
+        
+        test_df[lag1] = test_df.groupby(group_cols)[col].shift(1).fillna(0)
+        test_df[lead1] = test_df.groupby(group_cols)[col].shift(-1).fillna(0)
+        test_df[lag2] = test_df.groupby(group_cols)[col].shift(2).fillna(0)
+        test_df[lead2] = test_df.groupby(group_cols)[col].shift(-2).fillna(0)
+        
+        new_lag_lead_cols.extend([lag1, lead1, lag2, lead2])
+
 cols_to_drop = [c for c in cfg.drop_cols if c in train_df.columns]
 if cfg.target_col in train_df.columns:
     cols_to_drop.append(cfg.target_col)
+if cfg.participant_col in train_df.columns and cfg.participant_col not in cols_to_drop:
+    cols_to_drop.append(cfg.participant_col)
 
 X_train_full = train_df.drop(columns=cols_to_drop)
 y_train_full = train_df[cfg.target_col]
 
 common_cols = [c for c in cfg.numeric_features if c in X_train_full.columns and c in test_df.columns]
+
+for c in new_lag_lead_cols + categorical_cols:
+    if c not in common_cols and c in X_train_full.columns and c in test_df.columns:
+        common_cols.append(c)
+
+common_cols = list(set(common_cols) - set(cols_to_drop))
+
 X_train = X_train_full[common_cols]
 X_test = test_df[common_cols]
 
 print(f"Feature columns: {sorted(common_cols)}")
 
-unique_ids = train_df[cfg.participant_col].unique()
+unique_ids = np.array(train_df[cfg.participant_col].unique())
 np.random.seed(cfg.random_state)
 np.random.shuffle(unique_ids)
 
@@ -62,7 +110,7 @@ params = {
 
 callbacks = [
     lgb.early_stopping(cfg.early_stopping_rounds),
-    lgb.log_evaluation(cfg.verbose_eval)
+    lgb.log_evaluation(10)
 ]
 
 model = lgb.train(

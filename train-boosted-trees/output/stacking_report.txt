@@ -1,0 +1,26 @@
+Features used: 13
+Folds: 5
+
+CatBoost OOF
+RMSE: 251.580628
+R2: 0.331610
+Pearson: 0.576394
+Hackathon Score: 45.400202
+
+LightGBM OOF
+RMSE: 251.306943
+R2: 0.333063
+Pearson: 0.577569
+Hackathon Score: 45.531583
+
+XGBoost OOF
+RMSE: 251.688897
+R2: 0.331034
+Pearson: 0.576889
+Hackathon Score: 45.396134
+
+Stacked Ridge OOF
+RMSE: 251.185455
+R2: 0.333708
+Pearson: 0.577675
+Hackathon Score: 45.569152
