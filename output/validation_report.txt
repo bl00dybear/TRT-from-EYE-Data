@@ -1,30 +1,30 @@
 === VALIDATION METRICS ===
-RMSE: 289.7522
-R2: 0.3082
-Pearson: 0.5600
-Hackathon Score: 43.4095
+RMSE: 285.9865
+R2: 0.3260
+Pearson: 0.5803
+Hackathon Score: 45.3161
 
 === TOP 20 FEATURES (gain) ===
-zipf_frequency: 5306876057.6475
-word_len_sq: 2931001075.8984
-contextual_surprisal: 2680562498.6641
-contextual_surprisal_lead2: 767466498.5410
-contextual_surprisal_lag1: 674312438.8071
-contextual_surprisal_lead1: 638167470.3945
-zipf_frequency_lag1: 619843969.6777
-word_len_lag1: 614989923.0337
-zipf_frequency_lead2: 562819372.5039
-contextual_surprisal_lag2: 520492490.8335
-zipf_frequency_lag2: 492396899.1255
-vowel_consonant_ratio: 469621851.2715
-POS_tag: 446622495.8652
-zipf_frequency_lead1: 328608085.9565
-NE_type: 318827759.9170
-word_len_lag2: 226087972.9395
-n_syllables: 225435989.2622
-word_len_lead1: 218076431.0483
-morph_count: 199958695.6069
-word_len_lead2: 165378218.0215
+word_len_sq: 18586250593.8243
+word_len: 4630015163.5020
+zipf_frequency: 3825984485.2224
+contextual_surprisal: 2050923575.1589
+zipf_frequency_lag1: 1057993959.5970
+word_len_lag1: 993104008.4295
+contextual_surprisal_lag2: 829105371.9722
+contextual_surprisal_lead2: 804238869.6671
+contextual_surprisal_lag1: 793610603.1288
+zipf_frequency_lag2: 756901705.8624
+contextual_surprisal_lead1: 744515375.9219
+vowel_consonant_ratio: 604860001.6935
+zipf_frequency_lead1: 569311116.3794
+zipf_frequency_lead2: 527431826.5984
+POS_tag: 467325799.4101
+word_len_lag2: 423704104.5607
+n_syllables: 374276430.7288
+word_len_lead2: 325259486.6868
+morph_count: 317573508.0795
+word_len_lead1: 253168231.8187
 
 Training params: {'objective': 'regression', 'metric': 'rmse', 'num_leaves': 255, 'learning_rate': 0.05, 'min_child_samples': 20, 'subsample': 0.8, 'colsample_bytree': 0.8, 'reg_alpha': 0.1, 'reg_lambda': 0.1, 'random_state': 42, 'verbose': -1}
-Best iteration: 110
+Best iteration: 181
