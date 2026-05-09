@@ -3,8 +3,8 @@ from dataclasses import dataclass
 
 @dataclass
 class BoostedTreesConfig:
-    train_path: str = "merged_output/train_final.csv"
-    test_path: str = "merged_output/test_final.csv"
+    train_path: str = "feature-pipeline/output/train_features.csv"
+    test_path: str = "feature-pipeline/output/test_features.csv"
     output_dir: str = "train-boosted-trees/output"
     model_report_filename: str = "stacking_report.txt"
     submission_filename: str = "submission.csv"

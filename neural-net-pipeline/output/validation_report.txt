@@ -1,7 +1,7 @@
-RMSE: 231.754896
-R2: 0.309350
-Pearson: 0.591117
-Hackathon Score: 45.023340
-Rows submission: 47125
-Prediction mean: 192.632492
-Prediction std: 155.651215
+RMSE: 225.439770
+R2: 0.346476
+Pearson: 0.589771
+Hackathon Score: 46.812391
+Rows submission: 9425
+Prediction mean: 239.877823
+Prediction std: 141.281601

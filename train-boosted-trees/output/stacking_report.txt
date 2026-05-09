@@ -1,26 +1,27 @@
-Features used: 13
+Features used: 44
 Folds: 5
 
 CatBoost OOF
-RMSE: 251.580628
-R2: 0.331610
-Pearson: 0.576394
-Hackathon Score: 45.400202
+RMSE: 252.774565
+R2: 0.341941
+Pearson: 0.584795
+Hackathon Score: 46.336791
 
 LightGBM OOF
-RMSE: 251.306943
-R2: 0.333063
-Pearson: 0.577569
-Hackathon Score: 45.531583
+RMSE: 252.034712
+R2: 0.345787
+Pearson: 0.588102
+Hackathon Score: 46.694475
 
 XGBoost OOF
-RMSE: 251.688897
-R2: 0.331034
-Pearson: 0.576889
-Hackathon Score: 45.396134
+RMSE: 253.027906
+R2: 0.340621
+Pearson: 0.584775
+Hackathon Score: 46.269798
 
 Stacked Ridge OOF
-RMSE: 251.185455
-R2: 0.333708
-Pearson: 0.577675
-Hackathon Score: 45.569152
+RMSE: 251.909109
+R2: 0.346439
+Pearson: 0.588591
+Hackathon Score: 46.751502
+

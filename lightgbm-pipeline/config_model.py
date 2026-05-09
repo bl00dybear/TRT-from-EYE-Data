@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 @dataclass
 class ModelConfig:
-    train_path: str = "/media/sebi/nvme-1tb/NitroNLP-2026/feature-pipeline/output/train_features.csv"
-    test_path: str = "/media/sebi/nvme-1tb/NitroNLP-2026/feature-pipeline/output/test_features.csv"
+    train_path: str = "feature-pipeline/output/train_features.csv"
+    test_path: str = "feature-pipeline/output/test_features.csv"
     output_dir: str = "output"
     model_filename: str = "model.txt"
     submission_filename: str = "submission.csv"

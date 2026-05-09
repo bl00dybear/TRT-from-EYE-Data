@@ -3,8 +3,8 @@ from dataclasses import dataclass
 
 @dataclass
 class ModelConfig:
-    train_path: str = "merged_output/train_final.csv"
-    test_path: str = "merged_output/test_final.csv"
+    train_path: str = "feature-pipeline/output/train_features.csv"
+    test_path: str = "feature-pipeline/output/test_features.csv"
     output_dir: str = "neural-net-pipeline/output"
     model_filename: str = "best_model.pth"
     submission_filename: str = "submission.csv"
@@ -64,3 +64,10 @@ class ModelConfig:
     val_fraction_participants: float = 0.2
     random_state: int = 42
     num_workers: int = 4
+
+# === VALIDATION METRICS ===
+# RMSE: 233.0662
+# R2: 0.3015
+# Pearson: 0.5845
+# Hackathon Score: 44.2989
+
